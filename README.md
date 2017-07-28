@@ -1,3 +1,3 @@
 # okrs-generator
 
-To Auto gnerate OKRs
+To Auto generate OKRs
