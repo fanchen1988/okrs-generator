@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+require_relative './lib/index.rb'
+
+include OKRs
+
+@options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: okrs.rb [options]"
+
+  opts.on('-t', '--time 1w', 'From how long') do |t|
+    @options[:t] = t
+  end
+
+  opts.on('-a', '--all', 'All OKRs with lots of opening tickets') do |a|
+    @options[:a] = a
+  end
+
+  opts.on('-h', '--help', 'Run verbosely') do |h|
+    warn opts
+    exit
+  end
+end.parse!
+@options[:t] ||= '1w'
+@options[:a] ||= false
+
+@from_time = get_start_time_from_arg @options[:t]
+
+@github_fetcher = GithubResourceFetcher.new
+
+@user_events = @github_fetcher.get_user_events @from_time
+@all_issues_since_time = @github_fetcher.get_all_issues_since_time @from_time
+@opened_grouped_issues = @github_fetcher.get_opened_grouped_issues
+
+@github_analyzer = GithubResourceAnalyzer.new @user_events, @all_issues_since_time, @opened_grouped_issues, @github_fetcher
+@grouped_items = @github_analyzer.get_grouped_items
+
+puts ConfluenceWikiFormatter.get_formatted_text @grouped_items, @options[:a]

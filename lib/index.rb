@@ -1,0 +1,10 @@
+require 'set'
+require 'json'
+require 'netrc'
+require 'octokit'
+require 'optparse'
+
+require_relative './utils'
+require_relative './github_resource_fetcher'
+require_relative './github_resource_analyzer'
+require_relative './confluence_wiki_formatter'
